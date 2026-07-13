@@ -1,0 +1,15 @@
+{
+  "mcpServers": {
+    "keycloak": {
+      "command": "node",
+      "args": ["/absolute/path/to/mcp-keycloak/dist/cli.js"],
+      "env": {
+        "KEYCLOAK_URL": "https://keycloak.example.com",
+        "KEYCLOAK_REALM": "master",
+        "KEYCLOAK_CLIENT_ID": "mcp-keycloak",
+        "KEYCLOAK_CLIENT_SECRET": "...",
+        "KEYCLOAK_ALLOW_WRITES": ""
+      }
+    }
+  }
+}
