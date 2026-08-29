@@ -1,6 +1,12 @@
 import { describe, expect, it } from "vitest";
 
-import { inferGrantType, loadConfig, normalizeBaseUrl } from "../src/config.js";
+import {
+  inferGrantType,
+  isConfigured,
+  loadConfig,
+  normalizeBaseUrl,
+  setupInstructions,
+} from "../src/config.js";
 
 describe("normalizeBaseUrl", () => {
   it("strips a trailing slash", () => {
@@ -55,12 +61,34 @@ describe("inferGrantType", () => {
 describe("loadConfig", () => {
   const base = { KEYCLOAK_URL: "https://keycloak.rgis.dev" };
 
-  it("throws a helpful error when no credentials are set", () => {
-    expect(() => loadConfig(base as NodeJS.ProcessEnv)).toThrow(/KEYCLOAK_CLIENT_SECRET/);
+  // These two used to assert that loadConfig throws. It deliberately no longer
+  // does: a server that exits at startup surfaces in the client as a bare
+  // "MCP error -32000: Connection closed" with stderr swallowed, so the message
+  // explaining what to configure never reaches anyone. Missing configuration is
+  // now a describable state, reported through keycloak_auth_status.
+  it("does not throw when no credentials are set, so the server can still start", () => {
+    const cfg = loadConfig(base as NodeJS.ProcessEnv);
+    expect(cfg.grantType).toBeUndefined();
+    expect(isConfigured(cfg)).toBe(false);
   });
 
-  it("requires a url", () => {
-    expect(() => loadConfig({ KEYCLOAK_CLIENT_SECRET: "s" } as NodeJS.ProcessEnv)).toThrow();
+  it("does not throw when the url is missing", () => {
+    const cfg = loadConfig({ KEYCLOAK_CLIENT_SECRET: "s" } as NodeJS.ProcessEnv);
+    expect(cfg.baseUrl).toBeUndefined();
+    expect(isConfigured(cfg)).toBe(false);
+  });
+
+  it("names the missing pieces instead of failing silently", () => {
+    const steps = setupInstructions(loadConfig({} as NodeJS.ProcessEnv)).join(" ");
+    expect(steps).toContain("KEYCLOAK_URL");
+    expect(steps).toContain("KEYCLOAK_CLIENT_SECRET");
+    expect(steps).toContain("restart");
+  });
+
+  it("reports configured once url and a credential are both present", () => {
+    const cfg = loadConfig({ ...base, KEYCLOAK_CLIENT_SECRET: "s3cret" } as NodeJS.ProcessEnv);
+    expect(isConfigured(cfg)).toBe(true);
+    expect(setupInstructions(cfg)).toEqual([]);
   });
 
   it("applies defaults for the client_credentials grant", () => {

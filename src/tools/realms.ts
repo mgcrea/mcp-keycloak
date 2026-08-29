@@ -4,7 +4,7 @@ import { z } from "zod";
 import type { KeycloakAdminClient } from "../client/admin.js";
 import { describeIdentity } from "../client/identity.js";
 import { summarizeServerInfo } from "../client/shape.js";
-import type { ToolContext } from "./index.js";
+import type { ConfiguredToolContext } from "./index.js";
 import { briefArg, compact, confirmArg, realmArg, representationArg, wrap } from "./util.js";
 
 type Rec = Record<string, unknown>;
@@ -12,7 +12,7 @@ type Rec = Record<string, unknown>;
 export const registerRealmTools = (
   server: McpServer,
   client: KeycloakAdminClient,
-  ctx: ToolContext,
+  ctx: ConfiguredToolContext,
 ): void => {
   const { allowWrites } = ctx;
 

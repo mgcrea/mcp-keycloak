@@ -5,14 +5,17 @@ export type GrantType = (typeof GRANT_TYPES)[number];
 
 const ConfigSchema = z
   .object({
-    baseUrl: z.url("KEYCLOAK_URL must be a valid URL, e.g. https://keycloak.example.com"),
+    baseUrl: z
+      .url("KEYCLOAK_URL must be a valid URL, e.g. https://keycloak.example.com")
+      .optional(),
     realm: z.string().min(1).default("master"),
-    authRealm: z.string().min(1),
+    authRealm: z.string().min(1).default("master"),
     clientId: z.string().min(1).default("admin-cli"),
     clientSecret: z.string().min(1).optional(),
     username: z.string().min(1).optional(),
     password: z.string().min(1).optional(),
-    grantType: z.enum(GRANT_TYPES),
+    /** Undefined when nothing is configured — see the note on loadConfig. */
+    grantType: z.enum(GRANT_TYPES).optional(),
     allowWrites: z.boolean().default(false),
     maxRetries: z.number().int().nonnegative().max(10).default(3),
     refreshSkewSeconds: z.number().int().nonnegative().max(300).default(30),
@@ -83,14 +86,17 @@ const trimmed = (value: string | undefined): string | undefined => {
   return t ? t : undefined;
 };
 
+/**
+ * Never throws for "nothing is configured".
+ *
+ * An MCP server that exits at startup shows up in the client as a bare
+ * `MCP error -32000: Connection closed`, with stderr swallowed — so the one
+ * message that would have explained what to set never reaches anyone. The
+ * server stays up instead, registers keycloak_auth_status, and reports the gap
+ * as data the caller can act on.
+ */
 export const loadConfig = (env: NodeJS.ProcessEnv = process.env): Config => {
   const grantType = inferGrantType(env);
-  if (!grantType) {
-    throw new Error(
-      "No Keycloak credentials found. Set either KEYCLOAK_CLIENT_SECRET (client_credentials " +
-        "grant, recommended) or KEYCLOAK_USERNAME + KEYCLOAK_PASSWORD (password grant).",
-    );
-  }
   const rawUrl = trimmed(env.KEYCLOAK_URL);
   const realm = trimmed(env.KEYCLOAK_REALM) ?? "master";
   return ConfigSchema.parse({
@@ -108,4 +114,40 @@ export const loadConfig = (env: NodeJS.ProcessEnv = process.env): Config => {
     maxRetries: parseIntOpt(env.KEYCLOAK_MAX_RETRIES),
     refreshSkewSeconds: parseIntOpt(env.KEYCLOAK_REFRESH_SKEW_SECONDS),
   });
+};
+
+/** True once the server has everything it needs to call the Admin API. */
+export const isConfigured = (config: Config): boolean =>
+  Boolean(config.baseUrl) &&
+  (config.grantType === "client_credentials"
+    ? Boolean(config.clientSecret)
+    : config.grantType === "password"
+      ? Boolean(config.username && config.password)
+      : false);
+
+/**
+ * Returned by keycloak_auth_status and printed to stderr at startup. Prose
+ * rather than a code, because this is the text someone acts on when nothing
+ * works.
+ */
+export const setupInstructions = (config: Config): string[] => {
+  const steps: string[] = [];
+  if (!config.baseUrl) {
+    steps.push("Set KEYCLOAK_URL to your Keycloak base URL, e.g. https://keycloak.example.com.");
+  }
+  if (!config.grantType) {
+    steps.push(
+      "Set KEYCLOAK_CLIENT_SECRET for the client_credentials grant (recommended: a service " +
+        "account on a confidential client with the realm-management roles you need), or " +
+        "KEYCLOAK_USERNAME + KEYCLOAK_PASSWORD for the password grant.",
+    );
+  } else if (config.grantType === "client_credentials" && !config.clientSecret) {
+    steps.push("KEYCLOAK_GRANT_TYPE is client_credentials but KEYCLOAK_CLIENT_SECRET is unset.");
+  } else if (config.grantType === "password" && !(config.username && config.password)) {
+    steps.push(
+      "KEYCLOAK_GRANT_TYPE is password but KEYCLOAK_USERNAME / KEYCLOAK_PASSWORD are unset.",
+    );
+  }
+  if (steps.length > 0) steps.push("Then restart the server.");
+  return steps;
 };

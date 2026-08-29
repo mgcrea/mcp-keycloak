@@ -3,7 +3,7 @@ import { InMemoryTransport } from "@modelcontextprotocol/sdk/inMemory.js";
 import { beforeAll, describe, expect, it, vi } from "vitest";
 
 import { staticTokenProvider } from "../src/client/auth.js";
-import type { Config } from "../src/config.js";
+import { loadConfig, type Config } from "../src/config.js";
 import { createServer } from "../src/server.js";
 import { assertSafePath } from "../src/tools/request.js";
 
@@ -261,5 +261,34 @@ describe("event tools", () => {
     const text = (result.content as { text: string }[])[0]?.text ?? "";
 
     expect(text).not.toContain("DISABLED");
+  });
+});
+
+describe("with nothing configured", () => {
+  // The regression this guards: the server used to throw in loadConfig, so a
+  // missing KEYCLOAK_URL took the whole connection down and the explanation
+  // went to a stderr nobody sees.
+  it("still connects and serves keycloak_auth_status", async () => {
+    const config = loadConfig({} as NodeJS.ProcessEnv);
+    const { server } = createServer({ config });
+    const [clientTransport, serverTransport] = InMemoryTransport.createLinkedPair();
+    const client = new Client({ name: "test", version: "0.0.0" });
+    await Promise.all([server.connect(serverTransport), client.connect(clientTransport)]);
+
+    const names = (await client.listTools()).tools.map((t) => t.name);
+    expect(names).toEqual(["keycloak_auth_status"]);
+  });
+
+  it("answers keycloak_auth_status as a setup guide", async () => {
+    const config = loadConfig({} as NodeJS.ProcessEnv);
+    const { server } = createServer({ config });
+    const [clientTransport, serverTransport] = InMemoryTransport.createLinkedPair();
+    const client = new Client({ name: "test", version: "0.0.0" });
+    await Promise.all([server.connect(serverTransport), client.connect(clientTransport)]);
+
+    const res = await client.callTool({ name: "keycloak_auth_status", arguments: {} });
+    const body = JSON.parse((res.content as { text: string }[])[0]!.text);
+    expect(body.configured).toBe(false);
+    expect((body.setup as string[]).join(" ")).toContain("KEYCLOAK_URL");
   });
 });

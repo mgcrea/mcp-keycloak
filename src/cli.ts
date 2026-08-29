@@ -2,7 +2,7 @@
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 
 import { BUILD_INFO } from "./build-info.js";
-import { loadConfig } from "./config.js";
+import { isConfigured, loadConfig, setupInstructions } from "./config.js";
 import { createServer } from "./server.js";
 
 const stderrLogger = {
@@ -21,10 +21,16 @@ const main = async (): Promise<void> => {
   const { server } = createServer({ config, logger: stderrLogger });
   const transport = new StdioServerTransport();
   await server.connect(transport);
+  // The banner is the diagnostic surface: this scrolling past is the last
+  // chance anyone has to notice `writes=ENABLED` before an agent changes a realm.
   stderrLogger.warn(
-    `keycloak-mcp connected (url=${config.baseUrl}, realm=${config.realm}, ` +
-      `grant=${config.grantType}, writes=${config.allowWrites ? "ENABLED" : "disabled"})`,
+    `keycloak-mcp connected (url=${config.baseUrl ?? "MISSING"}, realm=${config.realm}, ` +
+      `grant=${config.grantType ?? "MISSING"}, writes=${config.allowWrites ? "ENABLED" : "disabled"})`,
   );
+  if (!isConfigured(config)) {
+    stderrLogger.warn("  not configured — only keycloak_auth_status is available:");
+    for (const line of setupInstructions(config)) stderrLogger.warn(`  ${line}`);
+  }
 
   const shutdown = (signal: string): void => {
     stderrLogger.warn(`received ${signal}, shutting down`);

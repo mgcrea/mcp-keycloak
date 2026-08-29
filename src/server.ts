@@ -3,7 +3,7 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { BUILD_INFO } from "./build-info.js";
 import { KeycloakAdminClient } from "./client/admin.js";
 import { createTokenProvider, type Logger, type TokenProvider } from "./client/auth.js";
-import type { Config } from "./config.js";
+import { isConfigured, type Config } from "./config.js";
 import { registerTools } from "./tools/index.js";
 
 export const SERVER_NAME = BUILD_INFO.name;
@@ -32,13 +32,16 @@ export const createServer = (opts: CreateServerOptions): CreatedServer => {
     opts.tokenProvider ??
     createTokenProvider({
       credentials: {
-        baseUrl: config.baseUrl,
+        // Placeholders when unconfigured: the token provider is built either
+        // way so `createServer` stays total, but no credential-requiring tool
+        // is registered, so it is never actually asked for a token.
+        baseUrl: config.baseUrl ?? "",
         authRealm: config.authRealm,
         clientId: config.clientId,
         clientSecret: config.clientSecret,
         username: config.username,
         password: config.password,
-        grantType: config.grantType,
+        grantType: config.grantType ?? "client_credentials",
       },
       refreshSkewSeconds: config.refreshSkewSeconds,
       ...(opts.fetch ? { fetch: opts.fetch } : {}),
@@ -46,7 +49,7 @@ export const createServer = (opts: CreateServerOptions): CreatedServer => {
     });
 
   const client = new KeycloakAdminClient({
-    baseUrl: config.baseUrl,
+    baseUrl: config.baseUrl ?? "",
     tokenProvider,
     defaultRealm: config.realm,
     maxRetries: config.maxRetries,
@@ -56,6 +59,8 @@ export const createServer = (opts: CreateServerOptions): CreatedServer => {
   });
 
   registerTools(server, client, {
+    config,
+    configured: isConfigured(config),
     tokenProvider,
     authRealm: config.authRealm,
     grantType: config.grantType,

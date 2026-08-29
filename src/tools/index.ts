@@ -2,7 +2,7 @@ import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 
 import type { KeycloakAdminClient } from "../client/admin.js";
 import type { TokenProvider } from "../client/auth.js";
-import type { GrantType } from "../config.js";
+import type { Config, GrantType } from "../config.js";
 import { registerAuthFlowTools } from "./auth-flows.js";
 import { registerClientTools } from "./clients.js";
 import { registerGroupTools } from "./groups.js";
@@ -12,13 +12,17 @@ import { registerRequestTool } from "./request.js";
 import { registerRoleTools } from "./roles.js";
 import { registerScopeTools } from "./scopes.js";
 import { registerSessionTools } from "./sessions.js";
+import { registerStatusTool } from "./status.js";
 import { registerUserTools } from "./users.js";
 
 export type ToolContext = {
+  config: Config;
+  /** False when credentials or KEYCLOAK_URL are missing. */
+  configured: boolean;
   tokenProvider: TokenProvider;
   /** Realm we authenticated against — where the acting account lives. */
   authRealm: string;
-  grantType: GrantType;
+  grantType: GrantType | undefined;
   clientId: string;
   username?: string | undefined;
   /** Register the mutating tools too. Off by default — see KEYCLOAK_ALLOW_WRITES. */
@@ -26,17 +30,35 @@ export type ToolContext = {
 };
 
 /**
- * Register the Keycloak tools. Read tools are always registered; the write tools
- * are only registered when `allowWrites` is set, so with the flag off they are
- * not merely refused — they are invisible, and cannot be called at all.
+ * Register the Keycloak tools.
+ *
+ * keycloak_auth_status comes first and unconditionally, so an unconfigured
+ * server is still a useful one — it can say what to set — rather than a
+ * connection that closes. Everything else needs real credentials.
+ *
+ * Read tools are then always registered; the write tools only when
+ * `allowWrites` is set, so with the flag off they are not merely refused —
+ * they are invisible, and cannot be called at all.
  */
+/**
+ * A context that has passed the configuration check. `grantType` is only
+ * optional while the server is unconfigured; narrowing it once here means the
+ * downstream tools take a non-optional value instead of each defaulting it to
+ * something that would be a lie.
+ */
+export type ConfiguredToolContext = ToolContext & { grantType: GrantType };
+
 export const registerTools = (
   server: McpServer,
   client: KeycloakAdminClient,
   ctx: ToolContext,
 ): void => {
   const { allowWrites } = ctx;
-  registerRealmTools(server, client, ctx);
+  registerStatusTool(server, ctx);
+  if (!ctx.configured || !ctx.grantType) return;
+  const ready: ConfiguredToolContext = { ...ctx, grantType: ctx.grantType };
+
+  registerRealmTools(server, client, ready);
   registerUserTools(server, client, allowWrites);
   registerGroupTools(server, client, allowWrites);
   registerRoleTools(server, client, allowWrites);
