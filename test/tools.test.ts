@@ -50,6 +50,12 @@ const methodEnum = async (client: Client, name: string): Promise<string[] | unde
 const callArgs = (fetchImpl: ReturnType<typeof vi.fn>, index = 0): [string, RequestInit] =>
   fetchImpl.mock.calls[index] as unknown as [string, RequestInit];
 
+const jsonResponse = (body: unknown): Response =>
+  new Response(JSON.stringify(body), {
+    status: 200,
+    headers: { "content-type": "application/json" },
+  });
+
 describe("tool registration", () => {
   let readOnly: string[];
   let withWrites: string[];
@@ -195,6 +201,29 @@ describe("destructive tools", () => {
     const [url, init] = callArgs(fetchImpl);
     expect(url).toBe("https://keycloak.rgis.dev/admin/realms/master/users/u1");
     expect(init.method).toBe("DELETE");
+  });
+});
+
+describe("keycloak_get_client", () => {
+  it("redacts the client secret rather than returning it in plain text", async () => {
+    const fetchImpl = vi.fn(async () =>
+      jsonResponse({
+        id: "uuid-1",
+        clientId: "example-client",
+        secret: "NOT-A-REAL-SECRET-fixture-only",
+        publicClient: false,
+      }),
+    );
+    const client = await connect(baseConfig, fetchImpl as unknown as typeof fetch);
+
+    const result = await client.callTool({
+      name: "keycloak_get_client",
+      arguments: { clientUuid: "uuid-1" },
+    });
+
+    const text = (result.content as { text: string }[])[0]?.text ?? "";
+    expect(text).not.toContain("NOT-A-REAL-SECRET-fixture-only");
+    expect(JSON.parse(text).secret).toBe("**********");
   });
 });
 

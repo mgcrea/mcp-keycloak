@@ -2,7 +2,7 @@ import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 
 import type { KeycloakAdminClient } from "../client/admin.js";
-import { summarizeClient, summarizeEach } from "../client/shape.js";
+import { redactSecrets, summarizeClient, summarizeEach } from "../client/shape.js";
 import {
   compact,
   confirmArg,
@@ -69,12 +69,15 @@ export const registerClientTools = (
     {
       description:
         "Get a client's full configuration: flows, redirect URIs, web origins, and its attributes " +
-        "(including token lifespans).",
+        "(including token lifespans). Its secret, if any, is redacted — use " +
+        "keycloak_get_client_secret to read it.",
       inputSchema: { realm: realmArg, clientUuid: clientUuidArg },
       annotations: { readOnlyHint: true },
     },
     async ({ realm, clientUuid }) =>
-      wrap(() => client.get(client.realmPath(realm, `/clients/${clientUuid}`))),
+      wrap(async () =>
+        redactSecrets(await client.get(client.realmPath(realm, `/clients/${clientUuid}`))),
+      ),
   );
 
   server.registerTool(
