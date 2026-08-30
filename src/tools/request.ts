@@ -36,6 +36,7 @@ export const registerRequestTool = (
   server.registerTool(
     "keycloak_request",
     {
+      title: "Keycloak: Request",
       description:
         "Escape hatch: call any Keycloak Admin REST endpoint directly. Use it when no curated " +
         "tool fits — user federation components, authorization policies, organizations, " +

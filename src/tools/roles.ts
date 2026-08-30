@@ -61,6 +61,7 @@ export const registerRoleTools = (
   server.registerTool(
     "keycloak_list_realm_roles",
     {
+      title: "Keycloak: List Realm Roles",
       description: "List the realm-level roles defined in a realm.",
       inputSchema: {
         realm: realmArg,
@@ -85,6 +86,7 @@ export const registerRoleTools = (
   server.registerTool(
     "keycloak_get_realm_role",
     {
+      title: "Keycloak: Get Realm Role",
       description: "Get one realm role by name, with its attributes and composite flag.",
       inputSchema: {
         realm: realmArg,
@@ -99,6 +101,7 @@ export const registerRoleTools = (
   server.registerTool(
     "keycloak_get_realm_role_members",
     {
+      title: "Keycloak: Get Realm Role Members",
       description: "List the users who have a given realm role — i.e. 'who has this role?'.",
       inputSchema: {
         realm: realmArg,
@@ -123,6 +126,7 @@ export const registerRoleTools = (
   server.registerTool(
     "keycloak_get_role_composites",
     {
+      title: "Keycloak: Get Role Composites",
       description:
         "List the roles contained in a composite role. Takes the role's UUID (not its name) — " +
         "get it from keycloak_get_realm_role.",
@@ -139,6 +143,7 @@ export const registerRoleTools = (
   server.registerTool(
     "keycloak_list_client_roles",
     {
+      title: "Keycloak: List Client Roles",
       description:
         "List the roles defined by a client. Note these are distinct from realm roles — " +
         "`realm-management`'s roles (view-users, manage-users, ...) are client roles.",
@@ -171,6 +176,7 @@ export const registerRoleTools = (
   server.registerTool(
     "keycloak_create_realm_role",
     {
+      title: "Keycloak: Create Realm Role",
       description: "Create a realm-level role.",
       inputSchema: {
         realm: realmArg,
@@ -193,6 +199,7 @@ export const registerRoleTools = (
   server.registerTool(
     "keycloak_update_realm_role",
     {
+      title: "Keycloak: Update Realm Role",
       description: "Update a realm role's description or attributes.",
       inputSchema: {
         realm: realmArg,
@@ -213,6 +220,7 @@ export const registerRoleTools = (
   server.registerTool(
     "keycloak_delete_realm_role",
     {
+      title: "Keycloak: Delete Realm Role",
       description:
         "Delete a realm role. It is removed from every user and group that had it — those " +
         "users immediately lose whatever access the role granted.",
@@ -226,6 +234,7 @@ export const registerRoleTools = (
   server.registerTool(
     "keycloak_create_client_role",
     {
+      title: "Keycloak: Create Client Role",
       description: "Create a role on a client.",
       inputSchema: {
         realm: realmArg,

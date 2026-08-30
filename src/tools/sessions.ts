@@ -53,6 +53,7 @@ export const registerSessionTools = (
   server.registerTool(
     "keycloak_get_realm_session_stats",
     {
+      title: "Keycloak: Get Realm Session Stats",
       description:
         "Count active sessions per client across the realm — who is logged in, and where.",
       inputSchema: { realm: realmArg },
@@ -64,6 +65,7 @@ export const registerSessionTools = (
   server.registerTool(
     "keycloak_get_client_sessions",
     {
+      title: "Keycloak: Get Client Sessions",
       description: "List the active user sessions for one client.",
       inputSchema: {
         realm: realmArg,
@@ -88,6 +90,7 @@ export const registerSessionTools = (
   server.registerTool(
     "keycloak_get_client_session_count",
     {
+      title: "Keycloak: Get Client Session Count",
       description: "Count the active sessions for one client.",
       inputSchema: { realm: realmArg, clientUuid: z.string().min(1) },
       annotations: { readOnlyHint: true },
@@ -99,6 +102,7 @@ export const registerSessionTools = (
   server.registerTool(
     "keycloak_get_events_config",
     {
+      title: "Keycloak: Get Events Config",
       description:
         "Show whether event logging is enabled for the realm, which event types are recorded, " +
         "and how long they are kept. Check this first if the event tools come back empty.",
@@ -111,6 +115,7 @@ export const registerSessionTools = (
   server.registerTool(
     "keycloak_list_events",
     {
+      title: "Keycloak: List Events",
       description:
         "Search user events — logins, logouts, failed logins, registrations. The way to answer " +
         "'why can't this user log in?'. Requires user event logging to be enabled on the realm.",
@@ -145,6 +150,7 @@ export const registerSessionTools = (
   server.registerTool(
     "keycloak_list_admin_events",
     {
+      title: "Keycloak: List Admin Events",
       description:
         "Search admin events — the audit trail of changes made to the realm itself (who created " +
         "this user, who changed that client). Requires admin event logging to be enabled.",
@@ -182,6 +188,7 @@ export const registerSessionTools = (
   server.registerTool(
     "keycloak_delete_session",
     {
+      title: "Keycloak: Delete Session",
       description: "Revoke one SSO session, logging that user out of it.",
       inputSchema: {
         realm: realmArg,
@@ -197,6 +204,7 @@ export const registerSessionTools = (
   server.registerTool(
     "keycloak_logout_all_sessions",
     {
+      title: "Keycloak: Logout All Sessions",
       description:
         "LOG EVERY USER IN THE REALM OUT. All active sessions are revoked and everyone must sign " +
         "in again. Use only in response to a compromise.",
@@ -209,6 +217,7 @@ export const registerSessionTools = (
   server.registerTool(
     "keycloak_clear_events",
     {
+      title: "Keycloak: Clear Events",
       description: "Delete the realm's stored user events. Destroys the audit trail; irreversible.",
       inputSchema: { realm: realmArg, confirm: confirmArg },
       annotations: { readOnlyHint: false, destructiveHint: true, idempotentHint: true },

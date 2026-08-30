@@ -60,6 +60,7 @@ export const registerUserTools = (
   server.registerTool(
     "keycloak_list_users",
     {
+      title: "Keycloak: List Users",
       description:
         "Search users in a realm. Use `search` for a loose match across name/username/email, " +
         "`username`/`email` + `exact` for a precise lookup, or `q` to match custom attributes.",
@@ -93,6 +94,7 @@ export const registerUserTools = (
   server.registerTool(
     "keycloak_count_users",
     {
+      title: "Keycloak: Count Users",
       description: "Count users matching a filter, without fetching them.",
       inputSchema: { realm: realmArg, ...searchArgs },
       annotations: { readOnlyHint: true },
@@ -107,6 +109,7 @@ export const registerUserTools = (
   server.registerTool(
     "keycloak_get_user",
     {
+      title: "Keycloak: Get User",
       description: "Get one user's full representation, including custom attributes.",
       inputSchema: { realm: realmArg, userId: userIdArg },
       annotations: { readOnlyHint: true },
@@ -118,6 +121,7 @@ export const registerUserTools = (
   server.registerTool(
     "keycloak_get_user_groups",
     {
+      title: "Keycloak: Get User Groups",
       description: "List the groups a user belongs to.",
       inputSchema: { realm: realmArg, userId: userIdArg, first: firstArg, max: maxArg },
       annotations: { readOnlyHint: true },
@@ -129,6 +133,7 @@ export const registerUserTools = (
   server.registerTool(
     "keycloak_get_user_role_mappings",
     {
+      title: "Keycloak: Get User Role Mappings",
       description:
         "Get a user's role mappings. By default returns only roles assigned DIRECTLY to the user; " +
         "set `effective` to also include roles inherited from groups and from composite roles — " +
@@ -159,6 +164,7 @@ export const registerUserTools = (
   server.registerTool(
     "keycloak_get_user_sessions",
     {
+      title: "Keycloak: Get User Sessions",
       description: "List a user's active SSO sessions (where and when they are logged in).",
       inputSchema: { realm: realmArg, userId: userIdArg },
       annotations: { readOnlyHint: true },
@@ -177,6 +183,7 @@ export const registerUserTools = (
   server.registerTool(
     "keycloak_create_user",
     {
+      title: "Keycloak: Create User",
       description:
         "Create a user. Returns the new user's id (Keycloak reports it in the Location header). " +
         "Pass `temporaryPassword` to set an initial password the user must change at first login.",
@@ -229,6 +236,7 @@ export const registerUserTools = (
   server.registerTool(
     "keycloak_update_user",
     {
+      title: "Keycloak: Update User",
       description:
         "Update a user. Only the fields you pass are changed. Note that `attributes` REPLACES " +
         "the whole attribute map rather than merging into it — read the user first if you mean to add one.",
@@ -248,6 +256,7 @@ export const registerUserTools = (
   server.registerTool(
     "keycloak_delete_user",
     {
+      title: "Keycloak: Delete User",
       description: "Permanently delete a user. Irreversible.",
       inputSchema: { realm: realmArg, userId: userIdArg, confirm: confirmArg },
       annotations: { readOnlyHint: false, destructiveHint: true, idempotentHint: true },
@@ -259,6 +268,7 @@ export const registerUserTools = (
   server.registerTool(
     "keycloak_reset_user_password",
     {
+      title: "Keycloak: Reset User Password",
       description:
         "Set a user's password, overwriting the existing one. Prefer " +
         "keycloak_send_user_action_email with UPDATE_PASSWORD when the user has a mailbox — " +
@@ -288,6 +298,7 @@ export const registerUserTools = (
   server.registerTool(
     "keycloak_send_user_action_email",
     {
+      title: "Keycloak: Send User Action Email",
       description:
         "Email the user a link that makes them perform actions — reset their password, verify " +
         "their email, set up TOTP. Requires SMTP to be configured on the realm.",
@@ -316,6 +327,7 @@ export const registerUserTools = (
   server.registerTool(
     "keycloak_set_user_groups",
     {
+      title: "Keycloak: Set User Groups",
       description: "Add a user to a group, or remove them from it.",
       inputSchema: {
         realm: realmArg,
@@ -335,6 +347,7 @@ export const registerUserTools = (
   server.registerTool(
     "keycloak_set_user_realm_roles",
     {
+      title: "Keycloak: Set User Realm Roles",
       description: "Grant realm roles to a user, or revoke them.",
       inputSchema: {
         realm: realmArg,
@@ -358,6 +371,7 @@ export const registerUserTools = (
   server.registerTool(
     "keycloak_set_user_client_roles",
     {
+      title: "Keycloak: Set User Client Roles",
       description:
         "Grant a client's roles to a user, or revoke them. This is how you grant admin rights: " +
         "assign `realm-management` roles (e.g. manage-users, view-clients) from that client.",
@@ -385,6 +399,7 @@ export const registerUserTools = (
   server.registerTool(
     "keycloak_logout_user",
     {
+      title: "Keycloak: Logout User",
       description: "Log a user out of every session. They must sign in again.",
       inputSchema: { realm: realmArg, userId: userIdArg, confirm: confirmArg },
       annotations: { readOnlyHint: false, destructiveHint: true, idempotentHint: true },

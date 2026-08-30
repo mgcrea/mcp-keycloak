@@ -34,6 +34,7 @@ export const registerScopeTools = (
   server.registerTool(
     "keycloak_list_client_scopes",
     {
+      title: "Keycloak: List Client Scopes",
       description:
         "List the realm's client scopes. A client scope is a reusable bundle of protocol mappers " +
         "and role scope — it's what decides which claims end up in a token.",
@@ -46,6 +47,7 @@ export const registerScopeTools = (
   server.registerTool(
     "keycloak_get_client_scope",
     {
+      title: "Keycloak: Get Client Scope",
       description: "Get one client scope with its protocol mappers.",
       inputSchema: { realm: realmArg, scopeId: z.string().min(1).describe("Client scope UUID.") },
       annotations: { readOnlyHint: true },
@@ -57,6 +59,7 @@ export const registerScopeTools = (
   server.registerTool(
     "keycloak_get_client_assigned_scopes",
     {
+      title: "Keycloak: Get Client Assigned Scopes",
       description:
         "Show which client scopes are assigned to a client, split into default (always applied) " +
         "and optional (applied only when the request asks for them).",
@@ -77,6 +80,7 @@ export const registerScopeTools = (
   server.registerTool(
     "keycloak_list_protocol_mappers",
     {
+      title: "Keycloak: List Protocol Mappers",
       description:
         "List the protocol mappers on a client or on a client scope. Mappers are what put claims " +
         "into a token (a user attribute, group membership, an audience, a hardcoded value).",
@@ -99,6 +103,7 @@ export const registerScopeTools = (
   server.registerTool(
     "keycloak_evaluate_client_scopes",
     {
+      title: "Keycloak: Evaluate Client Scopes",
       description:
         "Generate the access token a client would actually issue, without logging anyone in. " +
         "The direct way to answer 'why is this claim missing from my JWT?'.",
@@ -127,6 +132,7 @@ export const registerScopeTools = (
   server.registerTool(
     "keycloak_create_client_scope",
     {
+      title: "Keycloak: Create Client Scope",
       description: "Create a client scope. Returns its new UUID.",
       inputSchema: {
         realm: realmArg,
@@ -150,6 +156,7 @@ export const registerScopeTools = (
   server.registerTool(
     "keycloak_update_client_scope",
     {
+      title: "Keycloak: Update Client Scope",
       description: "Update a client scope.",
       inputSchema: {
         realm: realmArg,
@@ -165,6 +172,7 @@ export const registerScopeTools = (
   server.registerTool(
     "keycloak_delete_client_scope",
     {
+      title: "Keycloak: Delete Client Scope",
       description:
         "Delete a client scope. Every client using it loses the claims it contributed — tokens " +
         "silently start coming out without them.",
@@ -178,6 +186,7 @@ export const registerScopeTools = (
   server.registerTool(
     "keycloak_assign_client_scope",
     {
+      title: "Keycloak: Assign Client Scope",
       description:
         "Assign a client scope to a client, as default (always applied) or optional " +
         "(applied only when requested via the `scope` parameter).",
@@ -200,6 +209,7 @@ export const registerScopeTools = (
   server.registerTool(
     "keycloak_unassign_client_scope",
     {
+      title: "Keycloak: Unassign Client Scope",
       description: "Remove a client scope from a client.",
       inputSchema: {
         realm: realmArg,
@@ -220,6 +230,7 @@ export const registerScopeTools = (
   server.registerTool(
     "keycloak_create_protocol_mapper",
     {
+      title: "Keycloak: Create Protocol Mapper",
       description:
         "Add a protocol mapper to a client or a client scope — i.e. add a claim to its tokens.",
       inputSchema: {
@@ -260,6 +271,7 @@ export const registerScopeTools = (
   server.registerTool(
     "keycloak_delete_protocol_mapper",
     {
+      title: "Keycloak: Delete Protocol Mapper",
       description:
         "Remove a protocol mapper. The claim it produced disappears from every token issued " +
         "afterwards — apps relying on that claim will break.",

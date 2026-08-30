@@ -13,6 +13,7 @@ export const registerStatusTool = (server: McpServer, ctx: ToolContext): void =>
   server.registerTool(
     "keycloak_auth_status",
     {
+      title: "Keycloak: Auth Status",
       description:
         "Report whether this server has working Keycloak credentials, which realm and account " +
         "it acts as, whether writes are enabled, and — when something is missing — exactly " +

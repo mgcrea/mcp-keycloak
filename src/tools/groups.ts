@@ -28,6 +28,7 @@ export const registerGroupTools = (
   server.registerTool(
     "keycloak_list_groups",
     {
+      title: "Keycloak: List Groups",
       description:
         "List the realm's groups. Groups are a tree — top-level groups are returned with their " +
         "subGroups nested inside.",
@@ -56,6 +57,7 @@ export const registerGroupTools = (
   server.registerTool(
     "keycloak_get_group",
     {
+      title: "Keycloak: Get Group",
       description: "Get one group with its attributes and subgroups.",
       inputSchema: { realm: realmArg, groupId: groupIdArg },
       annotations: { readOnlyHint: true },
@@ -67,6 +69,7 @@ export const registerGroupTools = (
   server.registerTool(
     "keycloak_get_group_members",
     {
+      title: "Keycloak: Get Group Members",
       description: "List the users in a group.",
       inputSchema: {
         realm: realmArg,
@@ -93,6 +96,7 @@ export const registerGroupTools = (
   server.registerTool(
     "keycloak_get_group_role_mappings",
     {
+      title: "Keycloak: Get Group Role Mappings",
       description:
         "Get the roles mapped to a group. Every member of the group inherits these roles.",
       inputSchema: { realm: realmArg, groupId: groupIdArg },
@@ -107,6 +111,7 @@ export const registerGroupTools = (
   server.registerTool(
     "keycloak_create_group",
     {
+      title: "Keycloak: Create Group",
       description:
         "Create a group. Pass `parentGroupId` to nest it under an existing group. " +
         "Returns the new group's id.",
@@ -134,6 +139,7 @@ export const registerGroupTools = (
   server.registerTool(
     "keycloak_update_group",
     {
+      title: "Keycloak: Update Group",
       description: "Rename a group or change its attributes.",
       inputSchema: {
         realm: realmArg,
@@ -149,6 +155,7 @@ export const registerGroupTools = (
   server.registerTool(
     "keycloak_delete_group",
     {
+      title: "Keycloak: Delete Group",
       description:
         "Delete a group AND all of its subgroups. Members are not deleted, but they lose every " +
         "role the group granted them.",
@@ -162,6 +169,7 @@ export const registerGroupTools = (
   server.registerTool(
     "keycloak_set_group_realm_roles",
     {
+      title: "Keycloak: Set Group Realm Roles",
       description:
         "Grant realm roles to a group, or revoke them. Every member inherits the group's roles.",
       inputSchema: {

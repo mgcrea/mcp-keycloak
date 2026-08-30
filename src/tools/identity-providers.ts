@@ -18,6 +18,7 @@ export const registerIdentityProviderTools = (
   server.registerTool(
     "keycloak_list_identity_providers",
     {
+      title: "Keycloak: List Identity Providers",
       description:
         "List the realm's identity providers (external login sources: Google, GitHub, a corporate " +
         "SAML or OIDC IdP). Their client secrets are redacted.",
@@ -33,6 +34,7 @@ export const registerIdentityProviderTools = (
   server.registerTool(
     "keycloak_get_identity_provider",
     {
+      title: "Keycloak: Get Identity Provider",
       description:
         "Get one identity provider's full config — endpoints, trust settings, sync mode. " +
         "Its client secret is redacted.",
@@ -52,6 +54,7 @@ export const registerIdentityProviderTools = (
   server.registerTool(
     "keycloak_list_identity_provider_mappers",
     {
+      title: "Keycloak: List Identity Provider Mappers",
       description:
         "List an identity provider's mappers — the rules translating claims from the external IdP " +
         "into Keycloak users, roles and groups.",
@@ -74,6 +77,7 @@ export const registerIdentityProviderTools = (
   server.registerTool(
     "keycloak_create_identity_provider",
     {
+      title: "Keycloak: Create Identity Provider",
       description: "Add an external identity provider to the realm.",
       inputSchema: {
         realm: realmArg,
@@ -110,6 +114,7 @@ export const registerIdentityProviderTools = (
   server.registerTool(
     "keycloak_update_identity_provider",
     {
+      title: "Keycloak: Update Identity Provider",
       description: "Update an identity provider's configuration.",
       inputSchema: {
         realm: realmArg,
@@ -132,6 +137,7 @@ export const registerIdentityProviderTools = (
   server.registerTool(
     "keycloak_delete_identity_provider",
     {
+      title: "Keycloak: Delete Identity Provider",
       description:
         "Remove an identity provider. Every user who signs in through it immediately loses the " +
         "ability to log in.",
@@ -149,6 +155,7 @@ export const registerIdentityProviderTools = (
   server.registerTool(
     "keycloak_create_identity_provider_mapper",
     {
+      title: "Keycloak: Create Identity Provider Mapper",
       description:
         "Add a mapper to an identity provider — e.g. grant a role to everyone arriving from it, " +
         "or copy an external claim onto the Keycloak user.",

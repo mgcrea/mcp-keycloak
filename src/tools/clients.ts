@@ -29,6 +29,7 @@ export const registerClientTools = (
   server.registerTool(
     "keycloak_list_clients",
     {
+      title: "Keycloak: List Clients",
       description:
         "List the realm's clients (applications). Returns both `id` (the UUID every other client " +
         "tool needs) and `clientId` (the name shown in the console).",
@@ -67,6 +68,7 @@ export const registerClientTools = (
   server.registerTool(
     "keycloak_get_client",
     {
+      title: "Keycloak: Get Client",
       description:
         "Get a client's full configuration: flows, redirect URIs, web origins, and its attributes " +
         "(including token lifespans). Its secret, if any, is redacted — use " +
@@ -83,6 +85,7 @@ export const registerClientTools = (
   server.registerTool(
     "keycloak_get_client_secret",
     {
+      title: "Keycloak: Get Client Secret",
       description:
         "Get a confidential client's CURRENT SECRET IN PLAIN TEXT. This is a live credential — " +
         "it will appear in the conversation. Requires manage-clients. " +
@@ -97,6 +100,7 @@ export const registerClientTools = (
   server.registerTool(
     "keycloak_get_client_service_account_user",
     {
+      title: "Keycloak: Get Client Service Account User",
       description:
         "Get the service-account user backing a client. That user is where the client's admin " +
         "roles are assigned, so this is the way to check what a client can actually do.",
@@ -112,6 +116,7 @@ export const registerClientTools = (
   server.registerTool(
     "keycloak_get_client_installation_config",
     {
+      title: "Keycloak: Get Client Installation Config",
       description:
         "Get the ready-to-use adapter config (keycloak.json) for a client — issuer URL, realm, " +
         "credentials. Handy for wiring an app up to this client.",
@@ -134,6 +139,7 @@ export const registerClientTools = (
   server.registerTool(
     "keycloak_create_client",
     {
+      title: "Keycloak: Create Client",
       description:
         "Create a client (application). For a machine-to-machine client that can call this admin " +
         "API, set publicClient=false and serviceAccountsEnabled=true, then grant it " +
@@ -179,6 +185,7 @@ export const registerClientTools = (
   server.registerTool(
     "keycloak_update_client",
     {
+      title: "Keycloak: Update Client",
       description: "Update a client's configuration. Only the fields you pass are changed.",
       inputSchema: {
         realm: realmArg,
@@ -196,6 +203,7 @@ export const registerClientTools = (
   server.registerTool(
     "keycloak_delete_client",
     {
+      title: "Keycloak: Delete Client",
       description:
         "Delete a client. Every application authenticating through it immediately stops working.",
       inputSchema: { realm: realmArg, clientUuid: clientUuidArg, confirm: confirmArg },
@@ -208,6 +216,7 @@ export const registerClientTools = (
   server.registerTool(
     "keycloak_regenerate_client_secret",
     {
+      title: "Keycloak: Regenerate Client Secret",
       description:
         "Generate a NEW secret for a client, invalidating the old one. Anything still using the " +
         "old secret — including possibly this MCP server itself — breaks immediately.",

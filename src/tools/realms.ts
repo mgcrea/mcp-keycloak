@@ -19,6 +19,7 @@ export const registerRealmTools = (
   server.registerTool(
     "keycloak_whoami",
     {
+      title: "Keycloak: Whoami",
       description:
         "Show who the server is authenticated as and what it is actually allowed to do: the " +
         "issuing realm, the client, the acting user, token expiry, and the realm + " +
@@ -35,6 +36,7 @@ export const registerRealmTools = (
   server.registerTool(
     "keycloak_get_server_info",
     {
+      title: "Keycloak: Get Server Info",
       description:
         "Keycloak server version, uptime, JVM/memory info and enabled feature flags. " +
         "The raw endpoint also dumps every SPI provider and theme (~1MB); this returns only the " +
@@ -48,6 +50,7 @@ export const registerRealmTools = (
   server.registerTool(
     "keycloak_list_realms",
     {
+      title: "Keycloak: List Realms",
       description: "List the realms this token can see.",
       inputSchema: { briefRepresentation: briefArg },
       annotations: { readOnlyHint: true },
@@ -59,6 +62,7 @@ export const registerRealmTools = (
   server.registerTool(
     "keycloak_get_realm",
     {
+      title: "Keycloak: Get Realm",
       description:
         "Get a realm's full configuration: token lifespans, login/registration settings, " +
         "password policy, SSO session timeouts, and the flow bindings.",
@@ -73,6 +77,7 @@ export const registerRealmTools = (
   server.registerTool(
     "keycloak_create_realm",
     {
+      title: "Keycloak: Create Realm",
       description: "Create a new realm.",
       inputSchema: {
         realmName: z.string().min(1).describe("Name of the realm to create, e.g. `staging`."),
@@ -94,6 +99,7 @@ export const registerRealmTools = (
   server.registerTool(
     "keycloak_update_realm",
     {
+      title: "Keycloak: Update Realm",
       description:
         "Update a realm's configuration. Only the fields you pass are changed. " +
         "Useful for turning on event logging (`eventsEnabled`, `adminEventsEnabled`).",
@@ -115,6 +121,7 @@ export const registerRealmTools = (
   server.registerTool(
     "keycloak_delete_realm",
     {
+      title: "Keycloak: Delete Realm",
       description:
         "DELETE AN ENTIRE REALM, including every user, client, group and role in it. " +
         "Instant and irreversible — there is no undo and no trash.",
