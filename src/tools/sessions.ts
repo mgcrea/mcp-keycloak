@@ -1,4 +1,4 @@
-import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import type { McpServer } from "@modelcontextprotocol/server";
 import { z } from "zod";
 
 import type { KeycloakAdminClient } from "#/client/admin";
@@ -56,7 +56,7 @@ export const registerSessionTools = (
       title: "Keycloak: Get Realm Session Stats",
       description:
         "Count active sessions per client across the realm — who is logged in, and where.",
-      inputSchema: { realm: realmArg },
+      inputSchema: z.object({ realm: realmArg }),
       annotations: { readOnlyHint: true },
     },
     async ({ realm }) => wrap(() => client.get(client.realmPath(realm, "/client-session-stats"))),
@@ -67,12 +67,12 @@ export const registerSessionTools = (
     {
       title: "Keycloak: Get Client Sessions",
       description: "List the active user sessions for one client.",
-      inputSchema: {
+      inputSchema: z.object({
         realm: realmArg,
         clientUuid: z.string().min(1).describe("Client UUID (the `id` field)."),
         first: firstArg,
         max: maxArg,
-      },
+      }),
       annotations: { readOnlyHint: true },
     },
     async ({ realm, clientUuid, first, max }) =>
@@ -92,7 +92,7 @@ export const registerSessionTools = (
     {
       title: "Keycloak: Get Client Session Count",
       description: "Count the active sessions for one client.",
-      inputSchema: { realm: realmArg, clientUuid: z.string().min(1) },
+      inputSchema: z.object({ realm: realmArg, clientUuid: z.string().min(1) }),
       annotations: { readOnlyHint: true },
     },
     async ({ realm, clientUuid }) =>
@@ -106,7 +106,7 @@ export const registerSessionTools = (
       description:
         "Show whether event logging is enabled for the realm, which event types are recorded, " +
         "and how long they are kept. Check this first if the event tools come back empty.",
-      inputSchema: { realm: realmArg },
+      inputSchema: z.object({ realm: realmArg }),
       annotations: { readOnlyHint: true },
     },
     async ({ realm }) => wrap(() => client.get(client.realmPath(realm, "/events/config"))),
@@ -119,7 +119,7 @@ export const registerSessionTools = (
       description:
         "Search user events — logins, logouts, failed logins, registrations. The way to answer " +
         "'why can't this user log in?'. Requires user event logging to be enabled on the realm.",
-      inputSchema: {
+      inputSchema: z.object({
         realm: realmArg,
         type: z
           .array(z.string())
@@ -132,7 +132,7 @@ export const registerSessionTools = (
         dateTo: z.string().optional().describe("Inclusive upper bound, as YYYY-MM-DD."),
         first: firstArg,
         max: maxArg,
-      },
+      }),
       annotations: { readOnlyHint: true },
     },
     async ({ realm, first, max, ...filters }) =>
@@ -154,7 +154,7 @@ export const registerSessionTools = (
       description:
         "Search admin events — the audit trail of changes made to the realm itself (who created " +
         "this user, who changed that client). Requires admin event logging to be enabled.",
-      inputSchema: {
+      inputSchema: z.object({
         realm: realmArg,
         operationTypes: z.array(z.enum(["CREATE", "UPDATE", "DELETE", "ACTION"])).optional(),
         resourceTypes: z
@@ -168,7 +168,7 @@ export const registerSessionTools = (
         dateTo: z.string().optional().describe("Inclusive upper bound, as YYYY-MM-DD."),
         first: firstArg,
         max: maxArg,
-      },
+      }),
       annotations: { readOnlyHint: true },
     },
     async ({ realm, first, max, ...filters }) =>
@@ -190,11 +190,11 @@ export const registerSessionTools = (
     {
       title: "Keycloak: Delete Session",
       description: "Revoke one SSO session, logging that user out of it.",
-      inputSchema: {
+      inputSchema: z.object({
         realm: realmArg,
         sessionId: z.string().min(1).describe("Session id, from keycloak_get_user_sessions."),
         confirm: confirmArg,
-      },
+      }),
       annotations: { readOnlyHint: false, destructiveHint: true, idempotentHint: true },
     },
     async ({ realm, sessionId }) =>
@@ -208,7 +208,7 @@ export const registerSessionTools = (
       description:
         "LOG EVERY USER IN THE REALM OUT. All active sessions are revoked and everyone must sign " +
         "in again. Use only in response to a compromise.",
-      inputSchema: { realm: realmArg, confirm: confirmArg },
+      inputSchema: z.object({ realm: realmArg, confirm: confirmArg }),
       annotations: { readOnlyHint: false, destructiveHint: true, idempotentHint: false },
     },
     async ({ realm }) => wrap(() => client.post(client.realmPath(realm, "/logout-all"))),
@@ -219,7 +219,7 @@ export const registerSessionTools = (
     {
       title: "Keycloak: Clear Events",
       description: "Delete the realm's stored user events. Destroys the audit trail; irreversible.",
-      inputSchema: { realm: realmArg, confirm: confirmArg },
+      inputSchema: z.object({ realm: realmArg, confirm: confirmArg }),
       annotations: { readOnlyHint: false, destructiveHint: true, idempotentHint: true },
     },
     async ({ realm }) => wrap(() => client.del(client.realmPath(realm, "/events"))),

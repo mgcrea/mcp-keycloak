@@ -1,4 +1,4 @@
-import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import type { McpServer } from "@modelcontextprotocol/server";
 import { z } from "zod";
 
 import type { KeycloakAdminClient } from "#/client/admin";
@@ -23,7 +23,7 @@ export const registerAuthFlowTools = (
       description:
         "List the realm's authentication flows — the step-by-step login pipelines (browser, " +
         "direct grant, registration, reset credentials).",
-      inputSchema: { realm: realmArg },
+      inputSchema: z.object({ realm: realmArg }),
       annotations: { readOnlyHint: true },
     },
     async ({ realm }) => wrap(() => client.get(client.realmPath(realm, "/authentication/flows"))),
@@ -37,7 +37,7 @@ export const registerAuthFlowTools = (
         "Get the ordered steps inside a flow and whether each is REQUIRED, ALTERNATIVE, " +
         "CONDITIONAL or DISABLED. This is what determines what a user is actually asked for " +
         "when logging in (password, OTP, ...).",
-      inputSchema: { realm: realmArg, flowAlias: flowAliasArg },
+      inputSchema: z.object({ realm: realmArg, flowAlias: flowAliasArg }),
       annotations: { readOnlyHint: true },
     },
     async ({ realm, flowAlias }) =>
@@ -58,7 +58,7 @@ export const registerAuthFlowTools = (
       description:
         "List the realm's required actions (Update Password, Verify Email, Configure OTP) and " +
         "whether each is enabled or applied to new users by default.",
-      inputSchema: { realm: realmArg },
+      inputSchema: z.object({ realm: realmArg }),
       annotations: { readOnlyHint: true },
     },
     async ({ realm }) =>
@@ -72,7 +72,7 @@ export const registerAuthFlowTools = (
       description:
         "Show which flow is bound to each authentication entry point of the realm — i.e. which " +
         "flow actually runs on a browser login, a direct grant, a registration, a password reset.",
-      inputSchema: { realm: realmArg },
+      inputSchema: z.object({ realm: realmArg }),
       annotations: { readOnlyHint: true },
     },
     async ({ realm }) =>
@@ -99,14 +99,14 @@ export const registerAuthFlowTools = (
       description:
         "Create an empty authentication flow. To customise an existing one, prefer " +
         "keycloak_copy_authentication_flow — built-in flows cannot be edited in place.",
-      inputSchema: {
+      inputSchema: z.object({
         realm: realmArg,
         alias: z.string().min(1),
         description: z.string().optional(),
         providerId: z.enum(["basic-flow", "form-flow"]).default("basic-flow"),
         topLevel: z.boolean().default(true),
         builtIn: z.literal(false).default(false),
-      },
+      }),
       annotations: { readOnlyHint: false, destructiveHint: false },
     },
     async ({ realm, ...fields }) =>
@@ -121,11 +121,11 @@ export const registerAuthFlowTools = (
         "Copy a flow under a new name. This is the supported way to customise a built-in flow: " +
         "copy `browser`, edit the copy's executions, then bind it via keycloak_update_realm " +
         '({"browserFlow": "<newName>"}).',
-      inputSchema: {
+      inputSchema: z.object({
         realm: realmArg,
         flowAlias: flowAliasArg,
         newName: z.string().min(1).describe("Alias for the copy."),
-      },
+      }),
       annotations: { readOnlyHint: false, destructiveHint: false },
     },
     async ({ realm, flowAlias, newName }) =>
@@ -144,12 +144,12 @@ export const registerAuthFlowTools = (
       description:
         "Change one step's requirement within a flow — e.g. set the OTP Form to REQUIRED to force " +
         "MFA on every login. Get the executionId from keycloak_get_authentication_flow_executions.",
-      inputSchema: {
+      inputSchema: z.object({
         realm: realmArg,
         flowAlias: flowAliasArg,
         executionId: z.string().min(1).describe("The execution's `id`."),
         requirement: z.enum(["REQUIRED", "ALTERNATIVE", "DISABLED", "CONDITIONAL"]),
-      },
+      }),
       annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: true },
     },
     async ({ realm, flowAlias, executionId, requirement }) =>
@@ -171,11 +171,11 @@ export const registerAuthFlowTools = (
       description:
         "Delete an authentication flow. If the flow is still bound to the realm, logins break. " +
         "Note this takes the flow's UUID, not its alias.",
-      inputSchema: {
+      inputSchema: z.object({
         realm: realmArg,
         flowId: z.string().min(1).describe("Flow UUID (the `id`), NOT the alias."),
         confirm: confirmArg,
-      },
+      }),
       annotations: { readOnlyHint: false, destructiveHint: true, idempotentHint: true },
     },
     async ({ realm, flowId }) =>

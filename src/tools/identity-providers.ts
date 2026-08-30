@@ -1,4 +1,4 @@
-import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import type { McpServer } from "@modelcontextprotocol/server";
 import { z } from "zod";
 
 import type { KeycloakAdminClient } from "#/client/admin";
@@ -22,7 +22,7 @@ export const registerIdentityProviderTools = (
       description:
         "List the realm's identity providers (external login sources: Google, GitHub, a corporate " +
         "SAML or OIDC IdP). Their client secrets are redacted.",
-      inputSchema: { realm: realmArg },
+      inputSchema: z.object({ realm: realmArg }),
       annotations: { readOnlyHint: true },
     },
     async ({ realm }) =>
@@ -38,7 +38,7 @@ export const registerIdentityProviderTools = (
       description:
         "Get one identity provider's full config — endpoints, trust settings, sync mode. " +
         "Its client secret is redacted.",
-      inputSchema: { realm: realmArg, alias: aliasArg },
+      inputSchema: z.object({ realm: realmArg, alias: aliasArg }),
       annotations: { readOnlyHint: true },
     },
     async ({ realm, alias }) =>
@@ -58,7 +58,7 @@ export const registerIdentityProviderTools = (
       description:
         "List an identity provider's mappers — the rules translating claims from the external IdP " +
         "into Keycloak users, roles and groups.",
-      inputSchema: { realm: realmArg, alias: aliasArg },
+      inputSchema: z.object({ realm: realmArg, alias: aliasArg }),
       annotations: { readOnlyHint: true },
     },
     async ({ realm, alias }) =>
@@ -79,7 +79,7 @@ export const registerIdentityProviderTools = (
     {
       title: "Keycloak: Create Identity Provider",
       description: "Add an external identity provider to the realm.",
-      inputSchema: {
+      inputSchema: z.object({
         realm: realmArg,
         alias: aliasArg,
         providerId: z
@@ -99,7 +99,7 @@ export const registerIdentityProviderTools = (
               "For a social provider: usually just clientId and clientSecret.",
           ),
         representation: representationArg,
-      },
+      }),
       annotations: { readOnlyHint: false, destructiveHint: false },
     },
     async ({ realm, representation, ...fields }) =>
@@ -116,13 +116,13 @@ export const registerIdentityProviderTools = (
     {
       title: "Keycloak: Update Identity Provider",
       description: "Update an identity provider's configuration.",
-      inputSchema: {
+      inputSchema: z.object({
         realm: realmArg,
         alias: aliasArg,
         representation: z
           .record(z.string(), z.unknown())
           .describe("Partial IdentityProviderRepresentation."),
-      },
+      }),
       annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: true },
     },
     async ({ realm, alias, representation }) =>
@@ -141,7 +141,7 @@ export const registerIdentityProviderTools = (
       description:
         "Remove an identity provider. Every user who signs in through it immediately loses the " +
         "ability to log in.",
-      inputSchema: { realm: realmArg, alias: aliasArg, confirm: confirmArg },
+      inputSchema: z.object({ realm: realmArg, alias: aliasArg, confirm: confirmArg }),
       annotations: { readOnlyHint: false, destructiveHint: true, idempotentHint: true },
     },
     async ({ realm, alias }) =>
@@ -159,7 +159,7 @@ export const registerIdentityProviderTools = (
       description:
         "Add a mapper to an identity provider — e.g. grant a role to everyone arriving from it, " +
         "or copy an external claim onto the Keycloak user.",
-      inputSchema: {
+      inputSchema: z.object({
         realm: realmArg,
         alias: aliasArg,
         name: z.string().min(1),
@@ -171,7 +171,7 @@ export const registerIdentityProviderTools = (
               "`oidc-hardcoded-role-idp-mapper`, `oidc-advanced-group-idp-mapper`.",
           ),
         config: z.record(z.string(), z.string()).describe("Mapper config; all values are STRINGS."),
-      },
+      }),
       annotations: { readOnlyHint: false, destructiveHint: false },
     },
     async ({ realm, alias, name, identityProviderMapper, config }) =>

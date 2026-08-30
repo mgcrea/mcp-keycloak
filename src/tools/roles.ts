@@ -1,4 +1,4 @@
-import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import type { McpServer } from "@modelcontextprotocol/server";
 import { z } from "zod";
 
 import type { KeycloakAdminClient } from "#/client/admin";
@@ -63,13 +63,13 @@ export const registerRoleTools = (
     {
       title: "Keycloak: List Realm Roles",
       description: "List the realm-level roles defined in a realm.",
-      inputSchema: {
+      inputSchema: z.object({
         realm: realmArg,
         search: z.string().optional().describe("Filter roles by name (infix match)."),
         first: firstArg,
         max: maxArg,
         briefRepresentation: briefArg,
-      },
+      }),
       annotations: { readOnlyHint: true },
     },
     async ({ realm, search, first, max, briefRepresentation }) =>
@@ -88,10 +88,10 @@ export const registerRoleTools = (
     {
       title: "Keycloak: Get Realm Role",
       description: "Get one realm role by name, with its attributes and composite flag.",
-      inputSchema: {
+      inputSchema: z.object({
         realm: realmArg,
         roleName: z.string().min(1).describe("Role NAME (realm roles are addressed by name)."),
-      },
+      }),
       annotations: { readOnlyHint: true },
     },
     async ({ realm, roleName }) =>
@@ -103,12 +103,12 @@ export const registerRoleTools = (
     {
       title: "Keycloak: Get Realm Role Members",
       description: "List the users who have a given realm role — i.e. 'who has this role?'.",
-      inputSchema: {
+      inputSchema: z.object({
         realm: realmArg,
         roleName: z.string().min(1),
         first: firstArg,
         max: maxArg,
-      },
+      }),
       annotations: { readOnlyHint: true },
     },
     async ({ realm, roleName, first, max }) =>
@@ -130,10 +130,10 @@ export const registerRoleTools = (
       description:
         "List the roles contained in a composite role. Takes the role's UUID (not its name) — " +
         "get it from keycloak_get_realm_role.",
-      inputSchema: {
+      inputSchema: z.object({
         realm: realmArg,
         roleId: z.string().min(1).describe("Role UUID, from the `id` field of a role."),
-      },
+      }),
       annotations: { readOnlyHint: true },
     },
     async ({ realm, roleId }) =>
@@ -147,7 +147,7 @@ export const registerRoleTools = (
       description:
         "List the roles defined by a client. Note these are distinct from realm roles — " +
         "`realm-management`'s roles (view-users, manage-users, ...) are client roles.",
-      inputSchema: {
+      inputSchema: z.object({
         realm: realmArg,
         clientUuid: z
           .string()
@@ -158,7 +158,7 @@ export const registerRoleTools = (
         search: z.string().optional(),
         first: firstArg,
         max: maxArg,
-      },
+      }),
       annotations: { readOnlyHint: true },
     },
     async ({ realm, clientUuid, search, first, max }) =>
@@ -178,13 +178,13 @@ export const registerRoleTools = (
     {
       title: "Keycloak: Create Realm Role",
       description: "Create a realm-level role.",
-      inputSchema: {
+      inputSchema: z.object({
         realm: realmArg,
         name: z.string().min(1),
         description: z.string().optional(),
         attributes: z.record(z.string(), z.array(z.string())).optional(),
         representation: representationArg,
-      },
+      }),
       annotations: { readOnlyHint: false, destructiveHint: false },
     },
     async ({ realm, name, description, attributes, representation }) =>
@@ -201,11 +201,11 @@ export const registerRoleTools = (
     {
       title: "Keycloak: Update Realm Role",
       description: "Update a realm role's description or attributes.",
-      inputSchema: {
+      inputSchema: z.object({
         realm: realmArg,
         roleName: z.string().min(1),
         representation: z.record(z.string(), z.unknown()).describe("Partial RoleRepresentation."),
-      },
+      }),
       annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: true },
     },
     async ({ realm, roleName, representation }) =>
@@ -224,7 +224,7 @@ export const registerRoleTools = (
       description:
         "Delete a realm role. It is removed from every user and group that had it — those " +
         "users immediately lose whatever access the role granted.",
-      inputSchema: { realm: realmArg, roleName: z.string().min(1), confirm: confirmArg },
+      inputSchema: z.object({ realm: realmArg, roleName: z.string().min(1), confirm: confirmArg }),
       annotations: { readOnlyHint: false, destructiveHint: true, idempotentHint: true },
     },
     async ({ realm, roleName }) =>
@@ -236,13 +236,13 @@ export const registerRoleTools = (
     {
       title: "Keycloak: Create Client Role",
       description: "Create a role on a client.",
-      inputSchema: {
+      inputSchema: z.object({
         realm: realmArg,
         clientUuid: z.string().min(1).describe("Client UUID (the `id` field), not the clientId."),
         name: z.string().min(1),
         description: z.string().optional(),
         representation: representationArg,
-      },
+      }),
       annotations: { readOnlyHint: false, destructiveHint: false },
     },
     async ({ realm, clientUuid, name, description, representation }) =>

@@ -1,4 +1,4 @@
-import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import type { McpServer } from "@modelcontextprotocol/server";
 import { z } from "zod";
 
 import type { KeycloakAdminClient } from "#/client/admin";
@@ -32,7 +32,7 @@ export const registerGroupTools = (
       description:
         "List the realm's groups. Groups are a tree — top-level groups are returned with their " +
         "subGroups nested inside.",
-      inputSchema: {
+      inputSchema: z.object({
         realm: realmArg,
         search: z.string().optional().describe("Filter by group name."),
         exact: z.boolean().optional(),
@@ -40,7 +40,7 @@ export const registerGroupTools = (
         first: firstArg,
         max: maxArg,
         briefRepresentation: briefArg,
-      },
+      }),
       annotations: { readOnlyHint: true },
     },
     async ({ realm, first, max, briefRepresentation, ...filters }) =>
@@ -59,7 +59,7 @@ export const registerGroupTools = (
     {
       title: "Keycloak: Get Group",
       description: "Get one group with its attributes and subgroups.",
-      inputSchema: { realm: realmArg, groupId: groupIdArg },
+      inputSchema: z.object({ realm: realmArg, groupId: groupIdArg }),
       annotations: { readOnlyHint: true },
     },
     async ({ realm, groupId }) =>
@@ -71,13 +71,13 @@ export const registerGroupTools = (
     {
       title: "Keycloak: Get Group Members",
       description: "List the users in a group.",
-      inputSchema: {
+      inputSchema: z.object({
         realm: realmArg,
         groupId: groupIdArg,
         first: firstArg,
         max: maxArg,
         briefRepresentation: briefArg,
-      },
+      }),
       annotations: { readOnlyHint: true },
     },
     async ({ realm, groupId, first, max, briefRepresentation }) =>
@@ -99,7 +99,7 @@ export const registerGroupTools = (
       title: "Keycloak: Get Group Role Mappings",
       description:
         "Get the roles mapped to a group. Every member of the group inherits these roles.",
-      inputSchema: { realm: realmArg, groupId: groupIdArg },
+      inputSchema: z.object({ realm: realmArg, groupId: groupIdArg }),
       annotations: { readOnlyHint: true },
     },
     async ({ realm, groupId }) =>
@@ -115,7 +115,7 @@ export const registerGroupTools = (
       description:
         "Create a group. Pass `parentGroupId` to nest it under an existing group. " +
         "Returns the new group's id.",
-      inputSchema: {
+      inputSchema: z.object({
         realm: realmArg,
         name: z.string().min(1),
         parentGroupId: z
@@ -124,7 +124,7 @@ export const registerGroupTools = (
           .describe("Create as a subgroup of this group. Omit for a top-level group."),
         attributes: z.record(z.string(), z.array(z.string())).optional(),
         representation: representationArg,
-      },
+      }),
       annotations: { readOnlyHint: false, destructiveHint: false },
     },
     async ({ realm, name, parentGroupId, attributes, representation }) =>
@@ -141,11 +141,11 @@ export const registerGroupTools = (
     {
       title: "Keycloak: Update Group",
       description: "Rename a group or change its attributes.",
-      inputSchema: {
+      inputSchema: z.object({
         realm: realmArg,
         groupId: groupIdArg,
         representation: z.record(z.string(), z.unknown()).describe("Partial GroupRepresentation."),
-      },
+      }),
       annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: true },
     },
     async ({ realm, groupId, representation }) =>
@@ -159,7 +159,7 @@ export const registerGroupTools = (
       description:
         "Delete a group AND all of its subgroups. Members are not deleted, but they lose every " +
         "role the group granted them.",
-      inputSchema: { realm: realmArg, groupId: groupIdArg, confirm: confirmArg },
+      inputSchema: z.object({ realm: realmArg, groupId: groupIdArg, confirm: confirmArg }),
       annotations: { readOnlyHint: false, destructiveHint: true, idempotentHint: true },
     },
     async ({ realm, groupId }) =>
@@ -172,12 +172,12 @@ export const registerGroupTools = (
       title: "Keycloak: Set Group Realm Roles",
       description:
         "Grant realm roles to a group, or revoke them. Every member inherits the group's roles.",
-      inputSchema: {
+      inputSchema: z.object({
         realm: realmArg,
         groupId: groupIdArg,
         roleNames: roleNamesArg,
         action: actionArg,
-      },
+      }),
       annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: true },
     },
     async ({ realm, groupId, roleNames, action }) =>

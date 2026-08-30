@@ -1,4 +1,4 @@
-import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import type { McpServer } from "@modelcontextprotocol/server";
 import { z } from "zod";
 
 import type { KeycloakAdminClient } from "#/client/admin";
@@ -38,7 +38,7 @@ export const registerScopeTools = (
       description:
         "List the realm's client scopes. A client scope is a reusable bundle of protocol mappers " +
         "and role scope — it's what decides which claims end up in a token.",
-      inputSchema: { realm: realmArg },
+      inputSchema: z.object({ realm: realmArg }),
       annotations: { readOnlyHint: true },
     },
     async ({ realm }) => wrap(() => client.get(client.realmPath(realm, "/client-scopes"))),
@@ -49,7 +49,10 @@ export const registerScopeTools = (
     {
       title: "Keycloak: Get Client Scope",
       description: "Get one client scope with its protocol mappers.",
-      inputSchema: { realm: realmArg, scopeId: z.string().min(1).describe("Client scope UUID.") },
+      inputSchema: z.object({
+        realm: realmArg,
+        scopeId: z.string().min(1).describe("Client scope UUID."),
+      }),
       annotations: { readOnlyHint: true },
     },
     async ({ realm, scopeId }) =>
@@ -63,7 +66,7 @@ export const registerScopeTools = (
       description:
         "Show which client scopes are assigned to a client, split into default (always applied) " +
         "and optional (applied only when the request asks for them).",
-      inputSchema: { realm: realmArg, clientUuid: z.string().min(1) },
+      inputSchema: z.object({ realm: realmArg, clientUuid: z.string().min(1) }),
       annotations: { readOnlyHint: true },
     },
     async ({ realm, clientUuid }) =>
@@ -84,11 +87,11 @@ export const registerScopeTools = (
       description:
         "List the protocol mappers on a client or on a client scope. Mappers are what put claims " +
         "into a token (a user attribute, group membership, an audience, a hardcoded value).",
-      inputSchema: {
+      inputSchema: z.object({
         realm: realmArg,
         clientUuid: z.string().optional().describe("Client UUID. Pass this OR `scopeId`."),
         scopeId: z.string().optional().describe("Client scope UUID. Pass this OR `clientUuid`."),
-      },
+      }),
       annotations: { readOnlyHint: true },
     },
     async (args) =>
@@ -107,7 +110,7 @@ export const registerScopeTools = (
       description:
         "Generate the access token a client would actually issue, without logging anyone in. " +
         "The direct way to answer 'why is this claim missing from my JWT?'.",
-      inputSchema: {
+      inputSchema: z.object({
         realm: realmArg,
         clientUuid: z.string().min(1),
         scope: z.string().optional().describe("Space-separated optional scopes to include."),
@@ -115,7 +118,7 @@ export const registerScopeTools = (
           .string()
           .optional()
           .describe("Evaluate as this user (their claims are filled in)."),
-      },
+      }),
       annotations: { readOnlyHint: true },
     },
     async ({ realm, clientUuid, scope, userId }) =>
@@ -134,14 +137,14 @@ export const registerScopeTools = (
     {
       title: "Keycloak: Create Client Scope",
       description: "Create a client scope. Returns its new UUID.",
-      inputSchema: {
+      inputSchema: z.object({
         realm: realmArg,
         name: z.string().min(1),
         protocol: z.enum(["openid-connect", "saml"]).default("openid-connect"),
         description: z.string().optional(),
         attributes: z.record(z.string(), z.string()).optional(),
         representation: representationArg,
-      },
+      }),
       annotations: { readOnlyHint: false, destructiveHint: false },
     },
     async ({ realm, representation, ...fields }) =>
@@ -158,11 +161,11 @@ export const registerScopeTools = (
     {
       title: "Keycloak: Update Client Scope",
       description: "Update a client scope.",
-      inputSchema: {
+      inputSchema: z.object({
         realm: realmArg,
         scopeId: z.string().min(1),
         representation: z.record(z.string(), z.unknown()),
-      },
+      }),
       annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: true },
     },
     async ({ realm, scopeId, representation }) =>
@@ -176,7 +179,7 @@ export const registerScopeTools = (
       description:
         "Delete a client scope. Every client using it loses the claims it contributed — tokens " +
         "silently start coming out without them.",
-      inputSchema: { realm: realmArg, scopeId: z.string().min(1), confirm: confirmArg },
+      inputSchema: z.object({ realm: realmArg, scopeId: z.string().min(1), confirm: confirmArg }),
       annotations: { readOnlyHint: false, destructiveHint: true, idempotentHint: true },
     },
     async ({ realm, scopeId }) =>
@@ -190,12 +193,12 @@ export const registerScopeTools = (
       description:
         "Assign a client scope to a client, as default (always applied) or optional " +
         "(applied only when requested via the `scope` parameter).",
-      inputSchema: {
+      inputSchema: z.object({
         realm: realmArg,
         clientUuid: z.string().min(1),
         scopeId: z.string().min(1),
         kind: z.enum(["default", "optional"]),
-      },
+      }),
       annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: true },
     },
     async ({ realm, clientUuid, scopeId, kind }) =>
@@ -211,12 +214,12 @@ export const registerScopeTools = (
     {
       title: "Keycloak: Unassign Client Scope",
       description: "Remove a client scope from a client.",
-      inputSchema: {
+      inputSchema: z.object({
         realm: realmArg,
         clientUuid: z.string().min(1),
         scopeId: z.string().min(1),
         kind: z.enum(["default", "optional"]),
-      },
+      }),
       annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: true },
     },
     async ({ realm, clientUuid, scopeId, kind }) =>
@@ -233,7 +236,7 @@ export const registerScopeTools = (
       title: "Keycloak: Create Protocol Mapper",
       description:
         "Add a protocol mapper to a client or a client scope — i.e. add a claim to its tokens.",
-      inputSchema: {
+      inputSchema: z.object({
         realm: realmArg,
         clientUuid: z.string().optional().describe("Client UUID. Pass this OR `scopeId`."),
         scopeId: z.string().optional().describe("Client scope UUID. Pass this OR `clientUuid`."),
@@ -255,7 +258,7 @@ export const registerScopeTools = (
               '{"user.attribute": "department", "claim.name": "department", ' +
               '"jsonType.label": "String", "access.token.claim": "true", "id.token.claim": "true"}.',
           ),
-      },
+      }),
       annotations: { readOnlyHint: false, destructiveHint: false },
     },
     async (args) =>
@@ -275,13 +278,13 @@ export const registerScopeTools = (
       description:
         "Remove a protocol mapper. The claim it produced disappears from every token issued " +
         "afterwards — apps relying on that claim will break.",
-      inputSchema: {
+      inputSchema: z.object({
         realm: realmArg,
         clientUuid: z.string().optional(),
         scopeId: z.string().optional(),
         mapperId: z.string().min(1),
         confirm: confirmArg,
-      },
+      }),
       annotations: { readOnlyHint: false, destructiveHint: true, idempotentHint: true },
     },
     async (args) =>

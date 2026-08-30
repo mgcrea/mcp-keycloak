@@ -1,4 +1,4 @@
-import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import type { McpServer } from "@modelcontextprotocol/server";
 import { z } from "zod";
 
 import type { Created, KeycloakAdminClient } from "#/client/admin";
@@ -64,7 +64,7 @@ export const registerUserTools = (
       description:
         "Search users in a realm. Use `search` for a loose match across name/username/email, " +
         "`username`/`email` + `exact` for a precise lookup, or `q` to match custom attributes.",
-      inputSchema: {
+      inputSchema: z.object({
         realm: realmArg,
         ...searchArgs,
         idpAlias: z
@@ -74,7 +74,7 @@ export const registerUserTools = (
         first: firstArg,
         max: maxArg,
         briefRepresentation: briefArg,
-      },
+      }),
       annotations: { readOnlyHint: true },
     },
     async ({ realm, first, max, briefRepresentation, ...filters }) =>
@@ -96,7 +96,7 @@ export const registerUserTools = (
     {
       title: "Keycloak: Count Users",
       description: "Count users matching a filter, without fetching them.",
-      inputSchema: { realm: realmArg, ...searchArgs },
+      inputSchema: z.object({ realm: realmArg, ...searchArgs }),
       annotations: { readOnlyHint: true },
     },
     async ({ realm, ...filters }) =>
@@ -111,7 +111,7 @@ export const registerUserTools = (
     {
       title: "Keycloak: Get User",
       description: "Get one user's full representation, including custom attributes.",
-      inputSchema: { realm: realmArg, userId: userIdArg },
+      inputSchema: z.object({ realm: realmArg, userId: userIdArg }),
       annotations: { readOnlyHint: true },
     },
     async ({ realm, userId }) =>
@@ -123,7 +123,7 @@ export const registerUserTools = (
     {
       title: "Keycloak: Get User Groups",
       description: "List the groups a user belongs to.",
-      inputSchema: { realm: realmArg, userId: userIdArg, first: firstArg, max: maxArg },
+      inputSchema: z.object({ realm: realmArg, userId: userIdArg, first: firstArg, max: maxArg }),
       annotations: { readOnlyHint: true },
     },
     async ({ realm, userId, first, max }) =>
@@ -138,14 +138,14 @@ export const registerUserTools = (
         "Get a user's role mappings. By default returns only roles assigned DIRECTLY to the user; " +
         "set `effective` to also include roles inherited from groups and from composite roles — " +
         "that is the set that actually lands in their token.",
-      inputSchema: {
+      inputSchema: z.object({
         realm: realmArg,
         userId: userIdArg,
         effective: z
           .boolean()
           .default(false)
           .describe("Include roles inherited via groups and composites."),
-      },
+      }),
       annotations: { readOnlyHint: true },
     },
     async ({ realm, userId, effective }) =>
@@ -166,7 +166,7 @@ export const registerUserTools = (
     {
       title: "Keycloak: Get User Sessions",
       description: "List a user's active SSO sessions (where and when they are logged in).",
-      inputSchema: { realm: realmArg, userId: userIdArg },
+      inputSchema: z.object({ realm: realmArg, userId: userIdArg }),
       annotations: { readOnlyHint: true },
     },
     async ({ realm, userId }) =>
@@ -187,7 +187,7 @@ export const registerUserTools = (
       description:
         "Create a user. Returns the new user's id (Keycloak reports it in the Location header). " +
         "Pass `temporaryPassword` to set an initial password the user must change at first login.",
-      inputSchema: {
+      inputSchema: z.object({
         realm: realmArg,
         username: z.string().min(1),
         email: z.string().optional(),
@@ -212,7 +212,7 @@ export const registerUserTools = (
           .optional()
           .describe("Initial password. Set as temporary — the user is forced to change it."),
         representation: representationArg,
-      },
+      }),
       annotations: { readOnlyHint: false, destructiveHint: false },
     },
     async ({ realm, temporaryPassword, representation, ...fields }) =>
@@ -240,13 +240,13 @@ export const registerUserTools = (
       description:
         "Update a user. Only the fields you pass are changed. Note that `attributes` REPLACES " +
         "the whole attribute map rather than merging into it — read the user first if you mean to add one.",
-      inputSchema: {
+      inputSchema: z.object({
         realm: realmArg,
         userId: userIdArg,
         representation: z
           .record(z.string(), z.unknown())
           .describe('Partial UserRepresentation, e.g. {"enabled": false} or {"email": "a@b.com"}.'),
-      },
+      }),
       annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: true },
     },
     async ({ realm, userId, representation }) =>
@@ -258,7 +258,7 @@ export const registerUserTools = (
     {
       title: "Keycloak: Delete User",
       description: "Permanently delete a user. Irreversible.",
-      inputSchema: { realm: realmArg, userId: userIdArg, confirm: confirmArg },
+      inputSchema: z.object({ realm: realmArg, userId: userIdArg, confirm: confirmArg }),
       annotations: { readOnlyHint: false, destructiveHint: true, idempotentHint: true },
     },
     async ({ realm, userId }) =>
@@ -273,7 +273,7 @@ export const registerUserTools = (
         "Set a user's password, overwriting the existing one. Prefer " +
         "keycloak_send_user_action_email with UPDATE_PASSWORD when the user has a mailbox — " +
         "it avoids the password ever passing through this conversation.",
-      inputSchema: {
+      inputSchema: z.object({
         realm: realmArg,
         userId: userIdArg,
         password: z.string().min(1),
@@ -282,7 +282,7 @@ export const registerUserTools = (
           .default(true)
           .describe("Force the user to change it at next login. Defaults to true."),
         confirm: confirmArg,
-      },
+      }),
       annotations: { readOnlyHint: false, destructiveHint: true, idempotentHint: true },
     },
     async ({ realm, userId, password, temporary }) =>
@@ -302,7 +302,7 @@ export const registerUserTools = (
       description:
         "Email the user a link that makes them perform actions — reset their password, verify " +
         "their email, set up TOTP. Requires SMTP to be configured on the realm.",
-      inputSchema: {
+      inputSchema: z.object({
         realm: realmArg,
         userId: userIdArg,
         actions: z
@@ -311,7 +311,7 @@ export const registerUserTools = (
         lifespan: z.number().int().positive().optional().describe("Link validity, in seconds."),
         clientId: z.string().optional().describe("Client the user is redirected back to."),
         redirectUri: z.string().optional(),
-      },
+      }),
       annotations: { readOnlyHint: false, destructiveHint: false },
     },
     async ({ realm, userId, actions, lifespan, clientId, redirectUri }) =>
@@ -329,12 +329,12 @@ export const registerUserTools = (
     {
       title: "Keycloak: Set User Groups",
       description: "Add a user to a group, or remove them from it.",
-      inputSchema: {
+      inputSchema: z.object({
         realm: realmArg,
         userId: userIdArg,
         groupId: z.string().min(1).describe("Group UUID. See keycloak_list_groups."),
         action: actionArg,
-      },
+      }),
       annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: true },
     },
     async ({ realm, userId, groupId, action }) =>
@@ -349,12 +349,12 @@ export const registerUserTools = (
     {
       title: "Keycloak: Set User Realm Roles",
       description: "Grant realm roles to a user, or revoke them.",
-      inputSchema: {
+      inputSchema: z.object({
         realm: realmArg,
         userId: userIdArg,
         roleNames: roleNamesArg,
         action: actionArg,
-      },
+      }),
       annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: true },
     },
     async ({ realm, userId, roleNames, action }) =>
@@ -375,13 +375,13 @@ export const registerUserTools = (
       description:
         "Grant a client's roles to a user, or revoke them. This is how you grant admin rights: " +
         "assign `realm-management` roles (e.g. manage-users, view-clients) from that client.",
-      inputSchema: {
+      inputSchema: z.object({
         realm: realmArg,
         userId: userIdArg,
         clientUuid: z.string().min(1).describe("Client UUID (the `id` field), not the clientId."),
         roleNames: roleNamesArg,
         action: actionArg,
-      },
+      }),
       annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: true },
     },
     async ({ realm, userId, clientUuid, roleNames, action }) =>
@@ -401,7 +401,7 @@ export const registerUserTools = (
     {
       title: "Keycloak: Logout User",
       description: "Log a user out of every session. They must sign in again.",
-      inputSchema: { realm: realmArg, userId: userIdArg, confirm: confirmArg },
+      inputSchema: z.object({ realm: realmArg, userId: userIdArg, confirm: confirmArg }),
       annotations: { readOnlyHint: false, destructiveHint: true, idempotentHint: true },
     },
     async ({ realm, userId }) =>

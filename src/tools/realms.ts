@@ -1,4 +1,4 @@
-import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import type { McpServer } from "@modelcontextprotocol/server";
 import { z } from "zod";
 
 import type { KeycloakAdminClient } from "#/client/admin";
@@ -27,7 +27,7 @@ export const registerRealmTools = (
         "role mappings on the server, not from the token — Keycloak issues tokens with no role " +
         "claims to some clients, so the token alone proves nothing. " +
         "Call this FIRST when another tool returns 403.",
-      inputSchema: {},
+      inputSchema: z.object({}),
       annotations: { readOnlyHint: true },
     },
     async () => wrap(() => describeIdentity({ client, ...ctx })),
@@ -41,7 +41,7 @@ export const registerRealmTools = (
         "Keycloak server version, uptime, JVM/memory info and enabled feature flags. " +
         "The raw endpoint also dumps every SPI provider and theme (~1MB); this returns only the " +
         "useful head of it.",
-      inputSchema: {},
+      inputSchema: z.object({}),
       annotations: { readOnlyHint: true },
     },
     async () => wrap(async () => summarizeServerInfo(await client.get<Rec>("/admin/serverinfo"))),
@@ -52,7 +52,7 @@ export const registerRealmTools = (
     {
       title: "Keycloak: List Realms",
       description: "List the realms this token can see.",
-      inputSchema: { briefRepresentation: briefArg },
+      inputSchema: z.object({ briefRepresentation: briefArg }),
       annotations: { readOnlyHint: true },
     },
     async ({ briefRepresentation }) =>
@@ -66,7 +66,7 @@ export const registerRealmTools = (
       description:
         "Get a realm's full configuration: token lifespans, login/registration settings, " +
         "password policy, SSO session timeouts, and the flow bindings.",
-      inputSchema: { realm: realmArg },
+      inputSchema: z.object({ realm: realmArg }),
       annotations: { readOnlyHint: true },
     },
     async ({ realm }) => wrap(() => client.get(client.realmPath(realm))),
@@ -79,12 +79,12 @@ export const registerRealmTools = (
     {
       title: "Keycloak: Create Realm",
       description: "Create a new realm.",
-      inputSchema: {
+      inputSchema: z.object({
         realmName: z.string().min(1).describe("Name of the realm to create, e.g. `staging`."),
         enabled: z.boolean().default(true),
         displayName: z.string().optional(),
         representation: representationArg,
-      },
+      }),
       annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false },
     },
     async ({ realmName, enabled, displayName, representation }) =>
@@ -103,7 +103,7 @@ export const registerRealmTools = (
       description:
         "Update a realm's configuration. Only the fields you pass are changed. " +
         "Useful for turning on event logging (`eventsEnabled`, `adminEventsEnabled`).",
-      inputSchema: {
+      inputSchema: z.object({
         realm: realmArg,
         representation: z
           .record(z.string(), z.unknown())
@@ -111,7 +111,7 @@ export const registerRealmTools = (
             'Partial RealmRepresentation, e.g. {"eventsEnabled": true, "adminEventsEnabled": true} ' +
               'or {"loginWithEmailAllowed": false}.',
           ),
-      },
+      }),
       annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: true },
     },
     async ({ realm, representation }) =>
@@ -125,10 +125,10 @@ export const registerRealmTools = (
       description:
         "DELETE AN ENTIRE REALM, including every user, client, group and role in it. " +
         "Instant and irreversible — there is no undo and no trash.",
-      inputSchema: {
+      inputSchema: z.object({
         realm: z.string().min(1).describe("Realm to delete. Required — no default, on purpose."),
         confirm: confirmArg,
-      },
+      }),
       annotations: { readOnlyHint: false, destructiveHint: true, idempotentHint: true },
     },
     async ({ realm }) => wrap(() => client.del(client.realmPath(realm))),
