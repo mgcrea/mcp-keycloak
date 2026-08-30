@@ -1,8 +1,8 @@
 import { describe, expect, it, vi } from "vitest";
 
-import { KeycloakAdminClient, parseLocationId } from "../src/client/admin.js";
-import type { TokenProvider } from "../src/client/auth.js";
-import { KeycloakApiError } from "../src/client/errors.js";
+import { KeycloakAdminClient, parseLocationId } from "#/client/admin";
+import type { TokenProvider } from "#/client/auth";
+import { KeycloakApiError } from "#/client/errors";
 
 const jsonResponse = (body: unknown, init?: ResponseInit): Response =>
   new Response(JSON.stringify(body), {

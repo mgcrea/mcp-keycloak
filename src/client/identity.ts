@@ -1,7 +1,7 @@
-import type { GrantType } from "../config.js";
-import type { KeycloakAdminClient } from "./admin.js";
-import type { TokenProvider } from "./auth.js";
-import { decodeJwtPayload, realmFromIssuer } from "./token.js";
+import type { KeycloakAdminClient } from "#/client/admin";
+import type { TokenProvider } from "#/client/auth";
+import { decodeJwtPayload, realmFromIssuer } from "#/client/token";
+import type { GrantType } from "#/config";
 
 // Working out what the server is allowed to do is NOT a matter of reading the
 // access token. Keycloak issues "lightweight" tokens to some clients — `admin-cli`

@@ -1,10 +1,10 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 
-import { BUILD_INFO } from "./build-info.js";
-import { KeycloakAdminClient } from "./client/admin.js";
-import { createTokenProvider, type Logger, type TokenProvider } from "./client/auth.js";
-import { isConfigured, type Config } from "./config.js";
-import { registerTools } from "./tools/index.js";
+import { BUILD_INFO } from "#/build-info";
+import { KeycloakAdminClient } from "#/client/admin";
+import { createTokenProvider, type Logger, type TokenProvider } from "#/client/auth";
+import { isConfigured, type Config } from "#/config";
+import { registerTools } from "#/tools/index";
 
 export const SERVER_NAME = BUILD_INFO.name;
 export const SERVER_VERSION = BUILD_INFO.version;

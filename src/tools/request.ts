@@ -1,9 +1,9 @@
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 
-import type { KeycloakAdminClient } from "../client/admin.js";
-import { WritesDisabledError } from "../client/errors.js";
-import { realmArg, wrap } from "./util.js";
+import type { KeycloakAdminClient } from "#/client/admin";
+import { WritesDisabledError } from "#/client/errors";
+import { realmArg, wrap } from "#/tools/util";
 
 /**
  * Guard the escape hatch against being pointed somewhere it shouldn't go: at

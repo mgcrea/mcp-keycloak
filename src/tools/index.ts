@@ -1,19 +1,19 @@
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 
-import type { KeycloakAdminClient } from "../client/admin.js";
-import type { TokenProvider } from "../client/auth.js";
-import type { Config, GrantType } from "../config.js";
-import { registerAuthFlowTools } from "./auth-flows.js";
-import { registerClientTools } from "./clients.js";
-import { registerGroupTools } from "./groups.js";
-import { registerIdentityProviderTools } from "./identity-providers.js";
-import { registerRealmTools } from "./realms.js";
-import { registerRequestTool } from "./request.js";
-import { registerRoleTools } from "./roles.js";
-import { registerScopeTools } from "./scopes.js";
-import { registerSessionTools } from "./sessions.js";
-import { registerStatusTool } from "./status.js";
-import { registerUserTools } from "./users.js";
+import type { KeycloakAdminClient } from "#/client/admin";
+import type { TokenProvider } from "#/client/auth";
+import type { Config, GrantType } from "#/config";
+import { registerAuthFlowTools } from "#/tools/auth-flows";
+import { registerClientTools } from "#/tools/clients";
+import { registerGroupTools } from "#/tools/groups";
+import { registerIdentityProviderTools } from "#/tools/identity-providers";
+import { registerRealmTools } from "#/tools/realms";
+import { registerRequestTool } from "#/tools/request";
+import { registerRoleTools } from "#/tools/roles";
+import { registerScopeTools } from "#/tools/scopes";
+import { registerSessionTools } from "#/tools/sessions";
+import { registerStatusTool } from "#/tools/status";
+import { registerUserTools } from "#/tools/users";
 
 export type ToolContext = {
   config: Config;

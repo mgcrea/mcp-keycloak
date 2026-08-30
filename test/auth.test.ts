@@ -1,12 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 
-import {
-  createTokenProvider,
-  requestToken,
-  tokenEndpoint,
-  type Credentials,
-} from "../src/client/auth.js";
-import { KeycloakApiError } from "../src/client/errors.js";
+import { createTokenProvider, requestToken, tokenEndpoint, type Credentials } from "#/client/auth";
+import { KeycloakApiError } from "#/client/errors";
 
 const jsonResponse = (body: unknown, init?: ResponseInit): Response =>
   new Response(JSON.stringify(body), {

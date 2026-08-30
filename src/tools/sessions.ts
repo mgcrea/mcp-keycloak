@@ -1,14 +1,14 @@
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 
-import type { KeycloakAdminClient } from "../client/admin.js";
+import type { KeycloakAdminClient } from "#/client/admin";
 import {
   summarizeAdminEvent,
   summarizeEach,
   summarizeEvent,
   summarizeSession,
-} from "../client/shape.js";
-import { compact, confirmArg, firstArg, maxArg, realmArg, wrap } from "./util.js";
+} from "#/client/shape";
+import { compact, confirmArg, firstArg, maxArg, realmArg, wrap } from "#/tools/util";
 
 type Rec = Record<string, unknown>;
 

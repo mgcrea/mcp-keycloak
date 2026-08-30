@@ -1,5 +1,5 @@
-import type { Logger, TokenProvider } from "./auth.js";
-import { KeycloakApiError } from "./errors.js";
+import type { Logger, TokenProvider } from "#/client/auth";
+import { KeycloakApiError } from "#/client/errors";
 
 export type QueryValue = string | number | boolean | string[] | undefined;
 export type Query = Record<string, QueryValue>;

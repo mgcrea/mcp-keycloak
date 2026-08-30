@@ -1,8 +1,8 @@
 import { describe, expect, it, vi } from "vitest";
 
-import { KeycloakAdminClient } from "../src/client/admin.js";
-import { staticTokenProvider } from "../src/client/auth.js";
-import { describeIdentity, type DescribeIdentityOptions } from "../src/client/identity.js";
+import { KeycloakAdminClient } from "#/client/admin";
+import { staticTokenProvider } from "#/client/auth";
+import { describeIdentity, type DescribeIdentityOptions } from "#/client/identity";
 
 const jwt = (payload: Record<string, unknown>): string =>
   [

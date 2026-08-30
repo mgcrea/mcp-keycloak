@@ -6,7 +6,7 @@ import {
   loadConfig,
   normalizeBaseUrl,
   setupInstructions,
-} from "../src/config.js";
+} from "#/config";
 
 describe("normalizeBaseUrl", () => {
   it("strips a trailing slash", () => {

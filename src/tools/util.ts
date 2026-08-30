@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import { KeycloakApiError, WritesDisabledError } from "../client/errors.js";
+import { KeycloakApiError, WritesDisabledError } from "#/client/errors";
 
 export type ToolResult = {
   content: { type: "text"; text: string }[];

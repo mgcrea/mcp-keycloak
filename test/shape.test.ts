@@ -6,8 +6,8 @@ import {
   summarizeEach,
   summarizeServerInfo,
   summarizeUser,
-} from "../src/client/shape.js";
-import { decodeJwtPayload, realmFromIssuer } from "../src/client/token.js";
+} from "#/client/shape";
+import { decodeJwtPayload, realmFromIssuer } from "#/client/token";
 
 describe("summarizeUser", () => {
   it("keeps the identifying fields and drops the bulk", () => {

@@ -1,8 +1,8 @@
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 
-import type { KeycloakAdminClient } from "../client/admin.js";
-import { compact, confirmArg, realmArg, wrap } from "./util.js";
+import type { KeycloakAdminClient } from "#/client/admin";
+import { compact, confirmArg, realmArg, wrap } from "#/tools/util";
 
 type Rec = Record<string, unknown>;
 

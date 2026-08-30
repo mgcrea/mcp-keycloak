@@ -1,8 +1,8 @@
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 
-import { setupInstructions } from "../config.js";
-import type { ToolContext } from "./index.js";
-import { wrap } from "./util.js";
+import { setupInstructions } from "#/config";
+import type { ToolContext } from "#/tools/index";
+import { wrap } from "#/tools/util";
 
 /**
  * Registered unconditionally, before any credential check, so an unconfigured

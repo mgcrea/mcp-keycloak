@@ -1,8 +1,8 @@
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 
-import type { KeycloakAdminClient } from "../client/admin.js";
-import { compact, confirmArg, realmArg, representationArg, wrap } from "./util.js";
+import type { KeycloakAdminClient } from "#/client/admin";
+import { compact, confirmArg, realmArg, representationArg, wrap } from "#/tools/util";
 
 // A protocol mapper hangs off EITHER a client or a client scope; the two paths
 // are otherwise identical, so resolve the owner once.

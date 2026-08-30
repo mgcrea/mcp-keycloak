@@ -1,9 +1,9 @@
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 
-import type { KeycloakAdminClient } from "../client/admin.js";
-import { summarizeEach, summarizeUser } from "../client/shape.js";
-import { actionArg, resolveRoles, roleNamesArg } from "./roles.js";
+import type { KeycloakAdminClient } from "#/client/admin";
+import { summarizeEach, summarizeUser } from "#/client/shape";
+import { actionArg, resolveRoles, roleNamesArg } from "#/tools/roles";
 import {
   briefArg,
   compact,
@@ -13,7 +13,7 @@ import {
   realmArg,
   representationArg,
   wrap,
-} from "./util.js";
+} from "#/tools/util";
 
 const groupIdArg = z
   .string()

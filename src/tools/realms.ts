@@ -1,11 +1,11 @@
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 
-import type { KeycloakAdminClient } from "../client/admin.js";
-import { describeIdentity } from "../client/identity.js";
-import { summarizeServerInfo } from "../client/shape.js";
-import type { ConfiguredToolContext } from "./index.js";
-import { briefArg, compact, confirmArg, realmArg, representationArg, wrap } from "./util.js";
+import type { KeycloakAdminClient } from "#/client/admin";
+import { describeIdentity } from "#/client/identity";
+import { summarizeServerInfo } from "#/client/shape";
+import type { ConfiguredToolContext } from "#/tools/index";
+import { briefArg, compact, confirmArg, realmArg, representationArg, wrap } from "#/tools/util";
 
 type Rec = Record<string, unknown>;
 

@@ -1,5 +1,5 @@
-import type { GrantType } from "../config.js";
-import { KeycloakApiError } from "./errors.js";
+import { KeycloakApiError } from "#/client/errors";
+import type { GrantType } from "#/config";
 
 export type Logger = {
   debug?(...args: unknown[]): void;
