@@ -26,10 +26,19 @@ are off — they are never registered, so an agent cannot call them at all.
 
 ## Install
 
+No install step — run it straight from npm:
+
 ```bash
-pnpm install
-pnpm build
+npx -y @mgcrea/mcp-keycloak
 ```
+
+Or pull the image the CI publishes on every tag:
+
+```bash
+docker run --rm -i --env-file .env ghcr.io/mgcrea/mcp-keycloak:latest
+```
+
+To hack on it, see [Development](#development).
 
 ## Configure
 
@@ -75,7 +84,7 @@ cp .env.example .env
 ## Run
 
 ```bash
-pnpm start   # speaks JSON-RPC over stdio
+npx -y @mgcrea/mcp-keycloak   # speaks JSON-RPC over stdio
 ```
 
 ### Wire into Claude Code
@@ -86,8 +95,8 @@ Add to `.mcp.json` (project) or `~/.claude.json` (global):
 {
   "mcpServers": {
     "keycloak": {
-      "command": "node",
-      "args": ["/absolute/path/to/mcp-keycloak/dist/cli.js"],
+      "command": "npx",
+      "args": ["-y", "@mgcrea/mcp-keycloak"],
       "env": {
         "KEYCLOAK_URL": "https://keycloak.example.com",
         "KEYCLOAK_CLIENT_ID": "mcp-keycloak",
@@ -98,11 +107,24 @@ Add to `.mcp.json` (project) or `~/.claude.json` (global):
 }
 ```
 
+Writes are off unless you add `"KEYCLOAK_ALLOW_WRITES": "1"` to that `env` block.
+
 ### Inspect the tools
 
 ```bash
-npx @modelcontextprotocol/inspector node dist/cli.js
+npx @modelcontextprotocol/inspector npx -y @mgcrea/mcp-keycloak
 ```
+
+## Development
+
+```bash
+pnpm install
+pnpm build
+pnpm start          # node dist/cli.js
+pnpm test
+```
+
+Point a client at a working tree with `"command": "node", "args": ["/absolute/path/to/mcp-keycloak/dist/cli.js"]`.
 
 ## Tools
 

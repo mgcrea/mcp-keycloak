@@ -1,8 +1,8 @@
 {
   "mcpServers": {
     "keycloak": {
-      "command": "node",
-      "args": ["/absolute/path/to/mcp-keycloak/dist/cli.js"],
+      "command": "npx",
+      "args": ["-y", "@mgcrea/mcp-keycloak"],
       "env": {
         "KEYCLOAK_URL": "https://keycloak.example.com",
         "KEYCLOAK_REALM": "master",
