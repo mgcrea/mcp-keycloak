@@ -52,7 +52,8 @@
     "docker:buildx": "BUILDER=buildx scripts/docker-build.sh",
     "docker:push": "docker push mgcrea/mcp-keycloak:latest && docker push mgcrea/mcp-keycloak:$npm_package_version",
     "docker:release": "BUILDER=buildx scripts/docker-build.sh --push",
-    "prepublishOnly": "pnpm build"
+    "prepublishOnly": "pnpm build",
+    "release": "pnpm dlx release-it"
   },
   "dependencies": {
     "@modelcontextprotocol/server": "^2.0.0",
