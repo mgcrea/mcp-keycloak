@@ -1,6 +1,6 @@
 {
   "name": "@mgcrea/mcp-keycloak",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Model Context Protocol server for the Keycloak Admin REST API",
   "keywords": [
     "admin",
