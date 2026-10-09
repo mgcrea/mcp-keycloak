@@ -35,7 +35,7 @@ const connect = async (
 };
 
 const toolNames = async (client: Client): Promise<string[]> =>
-  (await client.listTools()).tools.map((t) => t.name).sort();
+  (await client.listTools()).tools.map((t) => t.name).toSorted();
 
 /** The `method` enum a tool advertises, which is how the write gate shows up in the schema. */
 const methodEnum = async (client: Client, name: string): Promise<string[] | undefined> => {
